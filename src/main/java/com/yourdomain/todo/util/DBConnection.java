@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
+    
     // --- READ FROM ENVIRONMENT VARIABLES ---
     private static final String JDBC_URL = System.getenv("DB_URL");
     private static final String JDBC_USER = System.getenv("DB_USER");
@@ -13,21 +14,34 @@ public class DBConnection {
     // Static block to load the driver once
     static {
         try {
-            // Ensure the correct driver name for your DB (e.g., "org.postgresql.Driver" for Postgres)
-            Class.forName("com.mysql.cj.jdbc.Driver"); 
+            // FIX: Use the standard PostgreSQL JDBC Driver name
+            Class.forName("org.postgresql.Driver"); 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error loading JDBC driver: " + e.getMessage());
+            throw new RuntimeException("Error loading PostgreSQL JDBC driver: " + e.getMessage());
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        // Will now fail if DB_URL is not set in Render environment
-        if (JDBC_URL == null || JDBC_URL.isEmpty()) {
-            throw new SQLException("Database environment variables are not set.");
+        // Validation check for debugging environment variable issues
+        if (JDBC_URL == null || JDBC_URL.isEmpty() || JDBC_USER == null || JDBC_PASSWORD == null) {
+            throw new SQLException("Database environment variables are not correctly set in Render (DB_URL, DB_USER, DB_PASSWORD).");
         }
-        return DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException e) {
+            // Re-throw the exception with a more descriptive message
+            System.err.println("Failed to connect to the database. Check DB_URL/USER/PASSWORD.");
+            throw e; 
+        }
+        return connection;
     }
-    
-    // ... (rest of the close method)
+
+    public static void close(Connection connection) {
+        if (connection != null) {
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
 }
