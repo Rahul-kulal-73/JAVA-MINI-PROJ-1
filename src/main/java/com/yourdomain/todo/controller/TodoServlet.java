@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import com.yourdomain.todo.model.Todo; 
 
 @WebServlet({"/list", "/new", "/insert", "/delete", "/edit", "/update", "/toggle", "/logout"})
 public class TodoServlet extends HttpServlet {
