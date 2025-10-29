@@ -1,0 +1,18 @@
+{
+  "name": "Java Todo App",
+  "description": "Simple ToDo list manager using Java Servlets, JSP, and MySQL.",
+  "env": {
+    "DB_URL": {
+      "description": "JDBC URL for your external database (e.g., MySQL or PostgreSQL)."
+    },
+    "DB_USER": {
+      "description": "Username for database connection."
+    },
+    "DB_PASSWORD": {
+      "description": "Password for database connection."
+    }
+  },
+  "build": {
+    "buildpack": "heroku/java"
+  }
+}
